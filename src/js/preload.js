@@ -9,6 +9,7 @@ AndRes.Preload.prototype = {
     this.game.load.image('boost-bottom', './assets/images/boost-bottom.png');
     this.game.load.image('boost-left', './assets/images/boost-left.png');
     this.game.load.image('boost-right', './assets/images/boost-right.png');
+    this.game.load.image('menu-background', './assets/images/menu.png');
   },
 
   create: function(){
