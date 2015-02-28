@@ -2,6 +2,7 @@ AndRes.Preload = function(){};
 
 AndRes.Preload.prototype = {
   preload: function(){
+    this.game.load.bitmapFont('spacefont', './assets/fonts/font.png', './assets/fonts/font.fnt');
     this.game.load.spritesheet('start-button', './assets/images/start-button.png', 100, 30);
     this.game.load.tilemap('level0', './assets/level0.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('level0', './assets/level0.png');
