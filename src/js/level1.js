@@ -5,6 +5,9 @@ AndRes.Level1.prototype = {
 
   },
 
+  BOOSTER_FUEL: 0.00012,
+  MANEUVER_FUEL: 0.00004,
+
   create: function(){
 
     this.map = this.game.add.tilemap('level0');
@@ -38,6 +41,11 @@ AndRes.Level1.prototype = {
     this.cursors = this.game.input.keyboard.createCursorKeys();
 
     this.ship.body.gravity.y = 100;
+    this.ship.fuel = 1;
+
+
+    this.fuelText = this.game.add.bitmapText(10, 10, 'spacefont', "Fuel: " + this.ship.fuel, 24 );
+    this.fuelText.fixedToCamera = true;
   },
 
   update: function(){
@@ -52,36 +60,45 @@ AndRes.Level1.prototype = {
     this.game.physics.arcade.overlap(this.ship, this.collisionLayer, this.playerHit, null, this);
 
 
-    if(this.cursors.up.isDown){
+    if(this.cursors.up.isDown && this.ship.fuel > 0){
       this.boostBottom.visible = true;
       this.ship.body.acceleration.y = -200;
+      this.ship.fuel -= this.BOOSTER_FUEL;
 
     } else {
       this.boostBottom.visible = false;
     }
 
-    if(this.cursors.right.isDown){
+    if(this.cursors.right.isDown && this.ship.fuel > 0){
       this.boostLeft.visible = true;
       this.ship.body.acceleration.x += 20;
+      this.ship.fuel -= this.MANEUVER_FUEL;
     } else {
       this.boostLeft.visible = false;
     }
 
 
-    if(this.cursors.left.isDown){
+    if(this.cursors.left.isDown && this.ship.fuel > 0){
       this.boostRight.visible = true;
       this.ship.body.acceleration.x += -20;
+      this.ship.fuel -= this.MANEUVER_FUEL;
+
     } else {
       this.boostRight.visible = false;
     }
 
+    this.fuelText.setText("Fuel: " + this.massagedFuelText());
   },
 
   playerHit: function(player, tile){
     if(Math.abs(player.currentFrameVelocityX) > 30 || Math.abs(player.currentFrameVelocityY) > 30){
       this.game.state.start('level1');
     }
+  },
 
+  massagedFuelText: function() {
+    return Math.ceil(this.ship.fuel * 100);
   }
+
 
 };
