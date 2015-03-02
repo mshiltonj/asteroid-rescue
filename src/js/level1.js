@@ -46,9 +46,27 @@ AndRes.Level1.prototype = {
 
     this.fuelText = this.game.add.bitmapText(10, 10, 'spacefont', "Fuel: " + this.ship.fuel, 24 );
     this.fuelText.fixedToCamera = true;
+    this.startTime = this.game.time.now;
+    this.duration = 0;
+    this.previousPauses = this.game.time.pauseDuration;
+
+    this.durationText = this.game.add.bitmapText(10, 32, 'spacefont', "Time: " + this.displayDuration(), 24 );
+  },
+
+  displayDuration: function(){
+    var durationInSec = parseInt(this.duration / 1000);
+
+    var mod = durationInSec % 60;
+    if (mod < 10){
+      mod  = "0" + '' + mod;
+    }
+    return (parseInt(durationInSec / 60)) + ":" + mod;
   },
 
   update: function(){
+
+    this.duration = this.game.time.now - this.startTime - this.game.time.pauseDuration + this.previousPauses;;
+    this.durationText.setText("Time: " + this.displayDuration());
 
     this.ship.body.acceleration.x = 0;
     this.ship.body.acceleration.y = 0;
