@@ -5,8 +5,8 @@ AndRes.Preload.prototype = {
     this.game.load.bitmapFont('spacefont', './assets/fonts/font.png', './assets/fonts/font.fnt');
     this.game.load.spritesheet('start-button', './assets/images/start-button.png', 100, 30);
     this.game.load.tilemap('level0', './assets/level0.json', null, Phaser.Tilemap.TILED_JSON);
-    this.game.load.image('level0', './assets/level0.png');
-    this.game.load.image('ship', './assets/images/ship.png');
+    this.game.load.spritesheet('level0', './assets/level0.png', 32, 32);
+   // this.game.load.image('ship', './assets/images/ship.png');
     this.game.load.image('boost-bottom', './assets/images/boost-bottom.png');
     this.game.load.image('boost-left', './assets/images/boost-left.png');
     this.game.load.image('boost-right', './assets/images/boost-right.png');

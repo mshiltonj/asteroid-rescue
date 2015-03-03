@@ -5,8 +5,8 @@ AndRes.Level1.prototype = {
 
   },
 
-  BOOSTER_FUEL: 0.00012,
-  MANEUVER_FUEL: 0.00004,
+  BOOSTER_FUEL: 0.0002,
+  MANEUVER_FUEL: 0.00006,
 
   create: function(){
 
@@ -28,7 +28,7 @@ AndRes.Level1.prototype = {
     this.boostLeft.visible = false;
     this.boostRight.visible = false;
 
-    this.ship = this.game.add.sprite(250,415, 'ship');
+    this.ship = this.game.add.sprite(250,415, 'level0', 11);
 
 
     this.ship.addChild(this.boostBottom);
