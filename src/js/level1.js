@@ -19,6 +19,7 @@ AndRes.Level1.prototype = {
 
     this.map.setCollisionBetween(0, 100, true, 'collisionLayer');
 
+    this.loadObjects();
 
     this.boostBottom = this.game.add.sprite(10, 29, 'boost-bottom');
     this.boostLeft = this.game.add.sprite(-7, 11, 'boost-left');
@@ -51,6 +52,7 @@ AndRes.Level1.prototype = {
     this.previousPauses = this.game.time.pauseDuration;
 
     this.durationText = this.game.add.bitmapText(10, 32, 'spacefont', "Time: " + this.displayDuration(), 24 );
+    this.durationText.fixedToCamera = true;
   },
 
   displayDuration: function(){
@@ -106,6 +108,13 @@ AndRes.Level1.prototype = {
     }
 
     this.fuelText.setText("Fuel: " + this.massagedFuelText());
+  },
+
+  loadObjects: function(){
+    this.map.objects['objectLayer'].forEach(function(item){
+      if (item.name == 'ship') { return; }
+      this.game.add.sprite(item.x, item.y - this.map.tileHeight, 'level0', item.gid - 1);
+    },this);
   },
 
   playerHit: function(player, tile){
