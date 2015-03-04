@@ -19,6 +19,9 @@ AndRes.Level1.prototype = {
 
     this.map.setCollisionBetween(0, 100, true, 'collisionLayer');
 
+    delete this.personGroup;
+    delete this.fuelGroup;
+
     this.loadObjects();
 
     this.boostBottom = this.game.add.sprite(10, 29, 'boost-bottom');
@@ -107,13 +110,22 @@ AndRes.Level1.prototype = {
       this.boostRight.visible = false;
     }
 
+    this.game.physics.arcade.overlap(this.ship, this.personGroup, this.collectPerson, null, this);
+
     this.fuelText.setText("Fuel: " + this.massagedFuelText());
   },
 
   loadObjects: function(){
     this.map.objects['objectLayer'].forEach(function(item){
-      if (item.name == 'ship') { return; }
-      this.game.add.sprite(item.x, item.y - this.map.tileHeight, 'level0', item.gid - 1);
+      if (item.name == 'ship') { return;}
+
+      var groupName = item.name + "Group";
+      if (!this[groupName]) {
+        this[groupName] = this.game.add.group();
+        this[groupName].enableBody = true;
+      }
+
+      this[groupName].create(item.x, item.y - this.map.tileHeight, 'level0', item.gid - 1);
     },this);
   },
 
@@ -121,6 +133,10 @@ AndRes.Level1.prototype = {
     if(Math.abs(player.currentFrameVelocityX) > 30 || Math.abs(player.currentFrameVelocityY) > 30){
       this.game.state.start('level1');
     }
+  },
+
+  collectPerson: function(player, human){
+    human.destroy();
   },
 
   massagedFuelText: function() {
