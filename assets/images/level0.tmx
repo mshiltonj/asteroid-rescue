@@ -41,7 +41,7 @@
 14,14,17,2,2,2,2,2,2,2,18,14,14,14,14,17,2,2,18,14,14,17,2,2,18,14,14,14,17,2,2,2,2,2,2,18,14,14,14,14
 </data>
  </layer>
- <objectgroup name="Object Layer 1" width="40" height="15">
+ <objectgroup name="objectLayer" width="40" height="15">
   <object name="ship" gid="12" x="226" y="447"/>
   <object name="fuel" gid="10" x="845" y="280"/>
   <object name="person" gid="9" x="325" y="413"/>
