@@ -24,6 +24,10 @@ AndRes.Level1.prototype = {
 
     this.loadObjects();
 
+    this.personGroup.forEach(function(person){
+      person.body.setSize(15, 19, 9, 13 );
+    });
+
     this.boostBottom = this.game.add.sprite(10, 29, 'boost-bottom');
     this.boostLeft = this.game.add.sprite(-7, 11, 'boost-left');
     this.boostRight = this.game.add.sprite(31, 11, 'boost-right');
@@ -48,13 +52,13 @@ AndRes.Level1.prototype = {
     this.ship.fuel = 1;
 
 
-    this.fuelText = this.game.add.bitmapText(10, 10, 'spacefont', "Fuel: " + this.ship.fuel, 24 );
+    this.fuelText = this.game.add.bitmapText(10, 10, 'spacefont', "Fuel: " + this.ship.fuel, 18 );
     this.fuelText.fixedToCamera = true;
     this.startTime = this.game.time.now;
     this.duration = 0;
     this.previousPauses = this.game.time.pauseDuration;
 
-    this.durationText = this.game.add.bitmapText(10, 32, 'spacefont', "Time: " + this.displayDuration(), 24 );
+    this.durationText = this.game.add.bitmapText(10, 32, 'spacefont', "Time: " + this.displayDuration(), 18 );
     this.durationText.fixedToCamera = true;
   },
 
@@ -141,7 +145,11 @@ AndRes.Level1.prototype = {
 
   massagedFuelText: function() {
     return Math.ceil(this.ship.fuel * 100);
+  },
+
+  render: function(){
+    //if (this.personGroup) {
+    //  this.personGroup.forEachAlive(this.game.debug.body, this.game.debug);
+    //}
   }
-
-
 };
