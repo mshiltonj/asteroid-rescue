@@ -21,6 +21,7 @@ AndRes.Level1.prototype = {
 
     delete this.personGroup;
     delete this.fuelGroup;
+    delete this.landing_padGroup;
 
     this.loadObjects();
 
@@ -135,6 +136,7 @@ AndRes.Level1.prototype = {
     }
 
     this.game.physics.arcade.overlap(this.ship, this.personGroup, this.collectPerson, null, this);
+    this.game.physics.arcade.overlap(this.ship, this.fuelGroup, this.collectFuel, null, this);
 
     this.fuelText.setText("Fuel: " + this.massagedFuelText());
   },
@@ -156,6 +158,14 @@ AndRes.Level1.prototype = {
   playerHit: function(player, tile){
     if(Math.abs(player.currentFrameVelocityX) > 35 || Math.abs(player.currentFrameVelocityY) > 35){
       this.game.state.start('level1');
+    }
+  },
+
+  collectFuel: function(player, fuel){
+    if (player.fuel < 1){
+      fuel.kill();
+      player.fuel += 0.25;
+      if (player.fuel > 1) { player.fuel = 1.0; }
     }
   },
 
