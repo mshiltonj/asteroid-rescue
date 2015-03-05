@@ -65,10 +65,20 @@ AndRes.Level1.prototype = {
 
     this.durationText = this.game.add.bitmapText(10, 30, 'spacefont', "Time: " + this.displayDuration(), 18 );
     this.durationText.fixedToCamera = true;
+
+    this.horizontalVelocityText = this.game.add.bitmapText( this.game.width - 140, 10, 'spacefont', 'TTTT', 18);
+    this.horizontalVelocityText.fixedToCamera = true;
+    this.verticalVelocityText = this.game.add.bitmapText(  this.game.width - 140, 30, 'spacefont', 'TTTT', 18);
+    this.verticalVelocityText.fixedToCamera = true;
   },
 
   updateHumansSaved: function(){
     this.humansText.setText("Humans: " + this.humansSaved + "/" + this.personGroup.length);
+  },
+
+  updateVelocityText: function(){
+    this.verticalVelocityText.setText("Y Speed: " + Math.floor(Math.abs(this.ship.body.velocity.y)));
+    this.horizontalVelocityText.setText("X Speed: " + Math.floor(Math.abs(this.ship.body.velocity.x)));
   },
 
   displayDuration: function(){
@@ -92,8 +102,9 @@ AndRes.Level1.prototype = {
 
     this.ship.currentFrameVelocityX = this.ship.body.velocity.x;
     this.ship.currentFrameVelocityY = this.ship.body.velocity.y;
-
+   // this.updateVelocityText();
     this.game.physics.arcade.overlap(this.ship, this.collisionLayer, this.playerHit, null, this);
+    this.updateVelocityText();
 
 
     if(this.cursors.up.isDown && this.ship.fuel > 0){
@@ -143,7 +154,7 @@ AndRes.Level1.prototype = {
   },
 
   playerHit: function(player, tile){
-    if(Math.abs(player.currentFrameVelocityX) > 30 || Math.abs(player.currentFrameVelocityY) > 30){
+    if(Math.abs(player.currentFrameVelocityX) > 35 || Math.abs(player.currentFrameVelocityY) > 35){
       this.game.state.start('level1');
     }
   },
