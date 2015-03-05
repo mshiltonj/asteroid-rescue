@@ -58,8 +58,17 @@ AndRes.Level1.prototype = {
     this.duration = 0;
     this.previousPauses = this.game.time.pauseDuration;
 
-    this.durationText = this.game.add.bitmapText(10, 32, 'spacefont', "Time: " + this.displayDuration(), 18 );
+    this.humansSaved = 0;
+    this.humansText = this.game.add.bitmapText(10, 50, 'spacefont', "" + this.personGroup.length, 18);
+    this.humansText.fixedToCamera = true;
+    this.updateHumansSaved();
+
+    this.durationText = this.game.add.bitmapText(10, 30, 'spacefont', "Time: " + this.displayDuration(), 18 );
     this.durationText.fixedToCamera = true;
+  },
+
+  updateHumansSaved: function(){
+    this.humansText.setText("Humans: " + this.humansSaved + "/" + this.personGroup.length);
   },
 
   displayDuration: function(){
@@ -140,7 +149,9 @@ AndRes.Level1.prototype = {
   },
 
   collectPerson: function(player, human){
-    human.destroy();
+    human.kill();
+    this.humansSaved += 1;
+    this.updateHumansSaved();
   },
 
   massagedFuelText: function() {
