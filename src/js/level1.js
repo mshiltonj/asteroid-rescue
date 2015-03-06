@@ -10,6 +10,8 @@ AndRes.Level1.prototype = {
 
   create: function(){
 
+    this.rocketSound = this.game.add.audio('rocket');
+
     this.map = this.game.add.tilemap('level0');
     this.map.addTilesetImage('level0');
     this.backgroundLayer = this.map.createLayer('backgroundLayer');
@@ -94,51 +96,71 @@ AndRes.Level1.prototype = {
 
   update: function(){
 
-    this.duration = this.game.time.now - this.startTime - this.game.time.pauseDuration + this.previousPauses;;
-    this.durationText.setText("Time: " + this.displayDuration());
-
     this.ship.body.acceleration.x = 0;
     this.ship.body.acceleration.y = 0;
 
+    this.rocketsOn = false;
 
-    this.ship.currentFrameVelocityX = this.ship.body.velocity.x;
-    this.ship.currentFrameVelocityY = this.ship.body.velocity.y;
-   // this.updateVelocityText();
-    this.game.physics.arcade.overlap(this.ship, this.collisionLayer, this.playerHit, null, this);
-    this.updateVelocityText();
-
-
-    if(this.cursors.up.isDown && this.ship.fuel > 0){
-      this.boostBottom.visible = true;
-      this.ship.body.acceleration.y = -200;
-      this.ship.fuel -= this.BOOSTER_FUEL;
-
-    } else {
+    if (this.ship.isDying){
+      this.ship.body.velocity.x = 0;
+      this.ship.body.velocity.y = 0;
       this.boostBottom.visible = false;
-    }
-
-    if(this.cursors.right.isDown && this.ship.fuel > 0){
-      this.boostLeft.visible = true;
-      this.ship.body.acceleration.x += 20;
-      this.ship.fuel -= this.MANEUVER_FUEL;
-    } else {
       this.boostLeft.visible = false;
-    }
-
-
-    if(this.cursors.left.isDown && this.ship.fuel > 0){
-      this.boostRight.visible = true;
-      this.ship.body.acceleration.x += -20;
-      this.ship.fuel -= this.MANEUVER_FUEL;
+      this.boostRight.visible = false;
+      this.ship.body.allowGravity = false;
 
     } else {
-      this.boostRight.visible = false;
+      this.duration = this.game.time.now - this.startTime - this.game.time.pauseDuration + this.previousPauses;;
+      this.durationText.setText("Time: " + this.displayDuration());
+
+      this.ship.currentFrameVelocityX = this.ship.body.velocity.x;
+      this.ship.currentFrameVelocityY = this.ship.body.velocity.y;
+      // this.updateVelocityText();
+      this.game.physics.arcade.overlap(this.ship, this.collisionLayer, this.playerHit, null, this);
+      this.updateVelocityText();
+
+      if(this.cursors.up.isDown && this.ship.fuel > 0){
+        this.boostBottom.visible = true;
+        this.ship.body.acceleration.y = -200;
+        this.ship.fuel -= this.BOOSTER_FUEL;
+        this.rocketsOn = true;
+      } else {
+        this.boostBottom.visible = false;
+      }
+
+      if(this.cursors.right.isDown && this.ship.fuel > 0){
+        this.boostLeft.visible = true;
+        this.ship.body.acceleration.x += 20;
+        this.ship.fuel -= this.MANEUVER_FUEL;
+        this.rocketsOn = true;
+      } else {
+        this.boostLeft.visible = false;
+      }
+
+      if(this.cursors.left.isDown && this.ship.fuel > 0){
+        this.boostRight.visible = true;
+        this.ship.body.acceleration.x += -20;
+        this.ship.fuel -= this.MANEUVER_FUEL;
+        this.rocketsOn = true;
+
+      } else {
+        this.boostRight.visible = false;
+      }
+
+      this.game.physics.arcade.overlap(this.ship, this.personGroup, this.collectPerson, null, this);
+      this.game.physics.arcade.overlap(this.ship, this.fuelGroup, this.collectFuel, null, this);
+      this.fuelText.setText("Fuel: " + this.massagedFuelText());
     }
 
-    this.game.physics.arcade.overlap(this.ship, this.personGroup, this.collectPerson, null, this);
-    this.game.physics.arcade.overlap(this.ship, this.fuelGroup, this.collectFuel, null, this);
 
-    this.fuelText.setText("Fuel: " + this.massagedFuelText());
+    if (this.rocketsOn){
+      if (! this.rocketSound.isPlaying ){
+        this.rocketSound.play('', null, 1, true, true);//'',null, null, true, true);
+      }
+    } else {
+      this.rocketSound.stop();
+    }
+
   },
 
   loadObjects: function(){
@@ -156,9 +178,19 @@ AndRes.Level1.prototype = {
   },
 
   playerHit: function(player, tile){
-    if(Math.abs(player.currentFrameVelocityX) > 35 || Math.abs(player.currentFrameVelocityY) > 35){
-      this.game.state.start('level1');
+    if(Math.abs(player.currentFrameVelocityX) > 38 || Math.abs(player.currentFrameVelocityY) > 38){
+      player.isDying = true;
+      player.tint = 0xff0000;
+      this.rocketSound.stop();
+
+      this.game.time.events.add(1000, this.restart, this);
+
     }
+  },
+
+  restart: function(){
+    this.ship.isDying = false;
+    this.game.state.start('level1');
   },
 
   collectFuel: function(player, fuel){
