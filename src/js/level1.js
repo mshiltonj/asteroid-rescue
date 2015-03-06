@@ -14,6 +14,7 @@ AndRes.Level1.prototype = {
     this.deathSound = this.game.add.audio('death');
     this.saveHumanSound = this.game.add.audio('saveHuman');
     this.fuelSound = this.game.add.audio('fuel');
+    this.spaceLoop = this.game.add.audio('spaceLoop');
 
     this.map = this.game.add.tilemap('level0');
     this.map.addTilesetImage('level0');
@@ -76,6 +77,8 @@ AndRes.Level1.prototype = {
     this.horizontalVelocityText.fixedToCamera = true;
     this.verticalVelocityText = this.game.add.bitmapText(  this.game.width - 140, 30, 'spacefont', 'TTTT', 18);
     this.verticalVelocityText.fixedToCamera = true;
+
+    this.spaceLoop.play('', null, 0.25);
   },
 
   updateHumansSaved: function(){
@@ -158,7 +161,7 @@ AndRes.Level1.prototype = {
 
     if (this.rocketsOn){
       if (! this.rocketSound.isPlaying ){
-        this.rocketSound.play('', null, 0.3, true, true);//'',null, null, true, true);
+        this.rocketSound.play('', null, 0.4, true, true);//'',null, null, true, true);
       }
     } else {
       this.rocketSound.stop();
@@ -185,6 +188,7 @@ AndRes.Level1.prototype = {
       player.isDying = true;
       player.tint = 0xff0000;
       this.rocketSound.stop();
+      this.spaceLoop.stop();
       this.deathSound.play('', null, 0.15);
 
       this.game.time.events.add(1500, this.restart, this);

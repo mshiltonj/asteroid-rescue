@@ -16,6 +16,7 @@ AndRes.Preload.prototype = {
     this.game.load.audio('death', './assets/audio/death.mp3');
     this.game.load.audio('fuel', './assets/audio/fuel.mp3');
     this.game.load.audio('saveHuman', './assets/audio/save-human.mp3');
+    this.game.load.audio('spaceLoop', './assets/audio/space-fighter-loop.mp3');
   },
 
   create: function(){
