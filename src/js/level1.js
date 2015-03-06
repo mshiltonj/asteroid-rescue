@@ -12,6 +12,8 @@ AndRes.Level1.prototype = {
 
     this.rocketSound = this.game.add.audio('rocket');
     this.deathSound = this.game.add.audio('death');
+    this.saveHumanSound = this.game.add.audio('saveHuman');
+    this.fuelSound = this.game.add.audio('fuel');
 
     this.map = this.game.add.tilemap('level0');
     this.map.addTilesetImage('level0');
@@ -199,6 +201,7 @@ AndRes.Level1.prototype = {
     if (player.fuel < 1){
       fuel.kill();
       player.fuel += 0.25;
+      this.fuelSound.play('', null, 0.4);
       if (player.fuel > 1) { player.fuel = 1.0; }
     }
   },
@@ -207,6 +210,7 @@ AndRes.Level1.prototype = {
     human.kill();
     this.humansSaved += 1;
     this.updateHumansSaved();
+    this.saveHumanSound.play();
   },
 
   massagedFuelText: function() {
