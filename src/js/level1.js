@@ -155,6 +155,9 @@ AndRes.Level1.prototype = {
 
       this.game.physics.arcade.overlap(this.ship, this.personGroup, this.collectPerson, null, this);
       this.game.physics.arcade.overlap(this.ship, this.fuelGroup, this.collectFuel, null, this);
+
+      this.safelyLanded();
+
       this.fuelText.setText("Fuel: " + this.massagedFuelText());
     }
 
@@ -168,6 +171,38 @@ AndRes.Level1.prototype = {
     }
 
   },
+
+  safelyLanded: function(){
+    var leftEdge = false;
+    var rightEdge = false;
+
+    this.game.physics.arcade.overlap(this.ship, this.landing_padGroup, this.landingPadHit, function(ship, landingPad){
+      var shipLeft = new Phaser.Point(ship.x, ship.y + ship.height);
+      var shipRight = new Phaser.Point(ship.x + ship.width, ship.y + ship.height);
+
+      if (shipLeft.x > landingPad.x && shipLeft.x < landingPad.x + landingPad.width &&
+          shipLeft.y > landingPad.y && shipLeft.y < landingPad.y + landingPad.height
+      ){
+          leftEdge = true;
+      }
+
+      if (shipRight.x > landingPad.x && shipRight.x < landingPad.x + landingPad.width &&
+          shipRight.y > landingPad.y && shipRight.y < landingPad.y + landingPad.height
+      ){
+        rightEdge = true;
+      }
+
+    }, this);
+
+    if (leftEdge && rightEdge){
+      console.log("LANDED!!!!");
+    }
+  },
+
+  landingPadHit: function(){
+
+  },
+
 
   loadObjects: function(){
     this.map.objects['objectLayer'].forEach(function(item){
