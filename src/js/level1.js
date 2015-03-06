@@ -11,6 +11,7 @@ AndRes.Level1.prototype = {
   create: function(){
 
     this.rocketSound = this.game.add.audio('rocket');
+    this.deathSound = this.game.add.audio('death');
 
     this.map = this.game.add.tilemap('level0');
     this.map.addTilesetImage('level0');
@@ -155,7 +156,7 @@ AndRes.Level1.prototype = {
 
     if (this.rocketsOn){
       if (! this.rocketSound.isPlaying ){
-        this.rocketSound.play('', null, 1, true, true);//'',null, null, true, true);
+        this.rocketSound.play('', null, 0.3, true, true);//'',null, null, true, true);
       }
     } else {
       this.rocketSound.stop();
@@ -182,8 +183,9 @@ AndRes.Level1.prototype = {
       player.isDying = true;
       player.tint = 0xff0000;
       this.rocketSound.stop();
+      this.deathSound.play('', null, 0.15);
 
-      this.game.time.events.add(1000, this.restart, this);
+      this.game.time.events.add(1500, this.restart, this);
 
     }
   },

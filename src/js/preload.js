@@ -13,6 +13,7 @@ AndRes.Preload.prototype = {
     this.game.load.image('menu-background', './assets/images/menu.png');
 
     this.game.load.audio('rocket', './assets/audio/rocket-sound.mp3');
+    this.game.load.audio('death', './assets/audio/death.mp3');
   },
 
   create: function(){
