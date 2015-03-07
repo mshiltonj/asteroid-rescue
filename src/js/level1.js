@@ -46,6 +46,15 @@ AndRes.Level1.prototype = {
     this.ship = this.game.add.sprite(250,415, 'level0', 11);
 
 
+    this.youLoseText = this.game.add.bitmapText(0, 0, 'spacefont', "You Lose!", 72);
+
+    this.youLoseText.tint = 0xFF0000;
+    this.youLoseText.visible = false;
+    this.youLoseText.scale.set(4, 4);
+    this.youLoseText.x = this.game.width / 2 - this.youLoseText.width / 2;
+    this.youLoseText.y = this.game.height / 2 - this.youLoseText.height / 2;
+    this.youLoseText.alpha = 0;
+
     this.ship.addChild(this.boostBottom);
     this.ship.addChild(this.boostLeft);
     this.ship.addChild(this.boostRight);
@@ -79,6 +88,16 @@ AndRes.Level1.prototype = {
     this.verticalVelocityText.fixedToCamera = true;
 
     this.spaceLoop.play('', null, 0.25);
+  },
+
+  youLose: function(){
+    this.youLoseText.visible = true;
+    this.game.add.tween(this.youLoseText).to({alpha: 1}, 500).start();
+    var newTextX = this.game.width / 2 - this.youLoseText.width  / 8;
+    var newTextY = this.game.height / 2 - this.youLoseText.height / 8;
+
+    this.game.add.tween(this.youLoseText.scale).to({x: 1, y: 1}, 350).start();
+    this.game.add.tween(this.youLoseText).to({x: newTextX, y: newTextY}, 350).start();
   },
 
   updateHumansSaved: function(){
@@ -225,6 +244,8 @@ AndRes.Level1.prototype = {
       this.rocketSound.stop();
       this.spaceLoop.stop();
       this.deathSound.play('', null, 0.15);
+      this.youLose();
+
 
       this.game.time.events.add(1500, this.restart, this);
 
