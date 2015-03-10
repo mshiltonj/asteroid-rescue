@@ -15,6 +15,7 @@ AndRes.Level1.prototype = {
     this.saveHumanSound = this.game.add.audio('saveHuman');
     this.fuelSound = this.game.add.audio('fuel');
     this.spaceLoop = this.game.add.audio('spaceLoop');
+    this.victorySound = this.game.add.audio('victory');
 
     this.map = this.game.add.tilemap('level0');
     this.map.addTilesetImage('level0');
@@ -25,14 +26,23 @@ AndRes.Level1.prototype = {
 
     this.map.setCollisionBetween(0, 100, true, 'collisionLayer');
 
-    delete this.personGroup;
-    delete this.fuelGroup;
-    delete this.landing_padGroup;
+
+    var groups = ['personGroup', 'fuelGroup', 'landing_padGroup', 'victoryGroup'];
+    groups.forEach(function(groupName){
+      delete this[groupName];
+      this[groupName] = this.game.add.group();
+      this[groupName].enableBody = true;
+    }, this);
+
 
     this.loadObjects();
 
     this.personGroup.forEach(function(person){
       person.body.setSize(15, 19, 9, 13 );
+    });
+
+    this.victoryGroup.forEach(function(object){
+      object.body.setSize(48, 9);
     });
 
     this.boostBottom = this.game.add.sprite(10, 29, 'boost-bottom');
@@ -51,9 +61,21 @@ AndRes.Level1.prototype = {
     this.youLoseText.tint = 0xFF0000;
     this.youLoseText.visible = false;
     this.youLoseText.scale.set(4, 4);
-    this.youLoseText.x = this.game.width / 2 - this.youLoseText.width / 2;
-    this.youLoseText.y = this.game.height / 2 - this.youLoseText.height / 2;
+    this.youLoseText.cameraOffset.x = this.game.width / 2 - this.youLoseText.width / 2;
+    this.youLoseText.cameraOffset.y = this.game.height / 2 - this.youLoseText.height / 2;
     this.youLoseText.alpha = 0;
+    this.youLoseText.fixedToCamera = true;
+
+
+    this.youWinText = this.game.add.bitmapText(0, 0, 'spacefont', "YOU WIN!!", 96);
+    //this.youWinText.tint = 0xFFFF00;
+    this.youWinText.visible = false;
+    this.youWinText.scale.set(4, 4);
+    this.youWinText.cameraOffset.x = this.game.width / 2 - this.youWinText.width / 2;
+    this.youWinText.cameraOffset.y = this.game.height / 2 - this.youWinText.height / 2;
+    this.youWinText.alpha = 0;
+    this.youWinText.fixedToCamera = true;
+
 
     this.ship.addChild(this.boostBottom);
     this.ship.addChild(this.boostLeft);
@@ -87,17 +109,17 @@ AndRes.Level1.prototype = {
     this.verticalVelocityText = this.game.add.bitmapText(  this.game.width - 140, 30, 'spacefont', 'TTTT', 18);
     this.verticalVelocityText.fixedToCamera = true;
 
-    this.spaceLoop.play('', null, 0.25);
+    this.spaceLoop.play('', null, 0.4);
   },
 
   youLose: function(){
     this.youLoseText.visible = true;
-    this.game.add.tween(this.youLoseText).to({alpha: 1}, 500).start();
     var newTextX = this.game.width / 2 - this.youLoseText.width  / 8;
     var newTextY = this.game.height / 2 - this.youLoseText.height / 8;
 
+    this.game.add.tween(this.youLoseText).to({alpha: 1}, 500).start();
     this.game.add.tween(this.youLoseText.scale).to({x: 1, y: 1}, 350).start();
-    this.game.add.tween(this.youLoseText).to({x: newTextX, y: newTextY}, 350).start();
+    this.game.add.tween(this.youLoseText.cameraOffset).to({x: newTextX, y: newTextY}, 350).start();
   },
 
   updateHumansSaved: function(){
@@ -126,7 +148,7 @@ AndRes.Level1.prototype = {
 
     this.rocketsOn = false;
 
-    if (this.ship.isDying){
+    if (this.ship.endGame){
       this.ship.body.velocity.x = 0;
       this.ship.body.velocity.y = 0;
       this.boostBottom.visible = false;
@@ -174,8 +196,7 @@ AndRes.Level1.prototype = {
 
       this.game.physics.arcade.overlap(this.ship, this.personGroup, this.collectPerson, null, this);
       this.game.physics.arcade.overlap(this.ship, this.fuelGroup, this.collectFuel, null, this);
-
-      this.safelyLanded();
+      this.game.physics.arcade.overlap(this.ship, this.victoryGroup, this.youWon, this.safelyLanded, this);
 
       this.fuelText.setText("Fuel: " + this.massagedFuelText());
     }
@@ -188,68 +209,110 @@ AndRes.Level1.prototype = {
     } else {
       this.rocketSound.stop();
     }
-
   },
 
-  safelyLanded: function(){
-    var leftEdge = false;
-    var rightEdge = false;
+  youWon: function(player){
+    player.endGame = true;
+    this.stopShip();
+    this.victorySound.play('', null, 0.6);
 
-    this.game.physics.arcade.overlap(this.ship, this.landing_padGroup, this.landingPadHit, function(ship, landingPad){
-      var shipLeft = new Phaser.Point(ship.x, ship.y + ship.height);
-      var shipRight = new Phaser.Point(ship.x + ship.width, ship.y + ship.height);
+    this.youWinText.visible = true;
+    var newTextX = this.game.width / 2 - this.youWinText.width  / 8;
+    var newTextY = this.game.height / 2 - this.youWinText.height / 8;
 
-      if (shipLeft.x > landingPad.x && shipLeft.x < landingPad.x + landingPad.width &&
-          shipLeft.y > landingPad.y && shipLeft.y < landingPad.y + landingPad.height
-      ){
-          leftEdge = true;
-      }
+    this.game.add.tween(this.youWinText).to({alpha: 1}, 1000).start();
+    this.game.add.tween(this.youWinText.scale).to({x: 1, y: 1}, 1000).start();
+    this.game.add.tween(this.youWinText.cameraOffset).to({x: newTextX, y: newTextY}, 1000).start();
 
-      if (shipRight.x > landingPad.x && shipRight.x < landingPad.x + landingPad.width &&
-          shipRight.y > landingPad.y && shipRight.y < landingPad.y + landingPad.height
-      ){
-        rightEdge = true;
-      }
+    console.log("YOU WON!!");
+  },
 
-    }, this);
+  safelyLanded: function(ship, landingPad){
 
-    if (leftEdge && rightEdge){
-      console.log("LANDED!!!!");
+    if (this.isTooFast(ship)) { return false; }
+
+    var leftEdge, rightEdge;
+
+    var shipLeft = new Phaser.Point(ship.x, ship.y + ship.height);
+    var shipRight = new Phaser.Point(ship.x + ship.width, ship.y + ship.height);
+
+    if (shipLeft.x > landingPad.body.x && shipLeft.x < landingPad.x + landingPad.body.width &&
+        shipLeft.y > landingPad.body.y && shipLeft.y < landingPad.y + landingPad.body.height
+    ){
+        leftEdge = true;
     }
+
+    if (shipRight.x > landingPad.body.x && shipRight.x < landingPad.x + landingPad.body.width &&
+        shipRight.y > landingPad.body.y && shipRight.y < landingPad.y + landingPad.body.height
+    ){
+      rightEdge = true;
+    }
+
+
+
+    return !!(leftEdge && rightEdge);
   },
 
   landingPadHit: function(){
 
   },
 
-
-  loadObjects: function(){
-    this.map.objects['objectLayer'].forEach(function(item){
+  loadObjectsByLayer: function(layer){
+    this.map.objects[layer].forEach(function(item){
       if (item.name == 'ship') { return;}
 
       var groupName = item.name + "Group";
-      if (!this[groupName]) {
-        this[groupName] = this.game.add.group();
-        this[groupName].enableBody = true;
-      }
 
-      this[groupName].create(item.x, item.y - this.map.tileHeight, 'level0', item.gid - 1);
+      if (this[groupName]) {
+        if (item.gid){
+          this[groupName].create(item.x, item.y - this.map.tileHeight, 'level0', item.gid - 1);
+        } else {
+          this[groupName].create(item.x, item.y);
+        }
+      }
+      else {
+        if (item.gid){
+          this.game.add.sprite(item.x, item.y - this.map.tileHeight, 'level0', item.gid - 1);
+        } else {
+          this.game.add.sprite(item.x, item.y);
+        }
+      }
     },this);
   },
 
-  playerHit: function(player, tile){
-    if(Math.abs(player.currentFrameVelocityX) > 38 || Math.abs(player.currentFrameVelocityY) > 38){
-      player.isDying = true;
+  loadObjects: function(layer){
+    this.loadObjectsByLayer('objectLayer');
+    this.loadObjectsByLayer('invisibleLayer');
+  },
+
+  isTooFast: function(player){
+    var safeLandingSpeed = 38;
+
+    return (Math.abs(player.currentFrameVelocityX) > safeLandingSpeed ||
+              Math.abs(player.currentFrameVelocityY) > safeLandingSpeed);
+
+  },
+
+  playerHit: function(player, tile) {
+
+    if (this.isTooFast(player)){
+      player.endGame = true;
       player.tint = 0xff0000;
-      this.rocketSound.stop();
-      this.spaceLoop.stop();
-      this.deathSound.play('', null, 0.15);
+
+      this.stopShip();
+
+      this.deathSound.play('', null, 0.25);
       this.youLose();
 
 
       this.game.time.events.add(1500, this.restart, this);
-
     }
+
+  },
+
+  stopShip: function(){
+    this.rocketSound.stop();
+    this.spaceLoop.stop();
   },
 
   restart: function(){
@@ -278,8 +341,8 @@ AndRes.Level1.prototype = {
   },
 
   render: function(){
-    //if (this.personGroup) {
-    //  this.personGroup.forEachAlive(this.game.debug.body, this.game.debug);
+    //if (this.victoryGroup) {
+    //  this.victoryGroup.forEachAlive(this.game.debug.body, this.game.debug);
     //}
   }
 };

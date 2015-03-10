@@ -177,7 +177,7 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":704,
+                 "x":691,
                  "y":283
                 }, 
                 {
@@ -193,6 +193,43 @@
                  "width":0,
                  "x":672,
                  "y":283
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "width":40,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "height":15,
+         "name":"invisibleLayer",
+         "objects":[
+                {
+                 "height":7,
+                 "name":"victoryTest",
+                 "properties":
+                    {
+
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":50,
+                 "x":128,
+                 "y":445
+                }, 
+                {
+                 "height":7,
+                 "name":"victory",
+                 "properties":
+                    {
+
+                    },
+                 "type":"",
+                 "visible":true,
+                 "width":50,
+                 "x":673,
+                 "y":251
                 }],
          "opacity":1,
          "type":"objectgroup",
