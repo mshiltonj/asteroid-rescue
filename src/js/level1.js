@@ -45,14 +45,7 @@ AndRes.Level1.prototype = {
       object.body.setSize(48, 9);
     });
 
-    this.boostBottom = this.game.add.sprite(10, 29, 'boost-bottom');
-    this.boostLeft = this.game.add.sprite(-7, 11, 'boost-left');
-    this.boostRight = this.game.add.sprite(31, 11, 'boost-right');
-
-    this.boostBottom.visible = false;
-    this.boostLeft.visible = false;
-    this.boostRight.visible = false;
-
+ //
     this.ship = this.game.add.sprite(250,415, 'level0', 11);
 
 
@@ -75,6 +68,70 @@ AndRes.Level1.prototype = {
     this.youWinText.cameraOffset.y = this.game.height / 2 - this.youWinText.height / 2;
     this.youWinText.alpha = 0;
     this.youWinText.fixedToCamera = true;
+
+
+    this.boostBottom = this.game.add.sprite(10, 29, 'boost-bottom');
+
+
+
+    this.boostBottom = this.game.add.emitter(16, 36);
+    this.boostBottom.makeParticles('spark');
+
+    this.boostBottom.width = 10;
+
+    this.boostBottom.gravity = 0;
+    this.boostBottom.setXSpeed(150, -150);
+    this.boostBottom.setYSpeed(150, 250);
+  //  this.boostBottom.setScale(0.25, 0.1);
+    //this.boostBottom.setRotation(30, -30);
+    this.boostBottom.setAlpha(0.6,0.8, 100);
+    this.boostBottom.setScale(0.1, 0.25);
+    // this.boostBottom.gravity = -100;
+    this.boostBottom.on = false;
+    this.boostBottom.start(false, 20, 6);
+    //this.boostBottom.emitX = 64;
+    //this.boostBottom.emitY = 500;
+
+    this.boostLeft = this.game.add.emitter(0, 16);
+    this.boostLeft.makeParticles('spark');
+
+    this.boostLeft.height = 5;
+
+    this.boostLeft.gravity = 0;
+    this.boostLeft.setYSpeed(0,0);
+    this.boostLeft.setXSpeed(-150, -250);
+    this.boostLeft.setScale(1, 1, 0.1, 0.11);
+    //this.boostLeft.setRotation(30, -30);
+    this.boostLeft.setAlpha(0.6,0.8, 100);
+    // this.boostLeft.setScale(0.4, 2, 0.4, 2, 6000, Phaser.Easing.Quintic.Out);
+    // this.boostLeft.gravity = -100;
+    this.boostLeft.on = false;
+    this.boostLeft.start(false, 20, 6);
+    //this.boostLeft.emitX = 64;
+    //this.boostLeft.emitY = 500;
+
+
+
+    this.boostRight = this.game.add.emitter(31, 16);
+    this.boostRight.makeParticles('spark');
+
+    this.boostRight.height = 5;
+
+    this.boostRight.gravity = 0;
+    this.boostRight.setYSpeed(0,0);
+    this.boostRight.setXSpeed(150, 250);
+    this.boostRight.setScale(1, 1, 0.1, 0.11);
+
+    //this.boostRight.setRotation(30, -30);
+    this.boostRight.setAlpha(0.6,0.8, 100);
+    // this.boostRight.setScale(0.4, 2, 0.4, 2, 6000, Phaser.Easing.Quintic.Out);
+    // this.boostRight.gravity = -100;
+    this.boostRight.on = false;
+    this.boostRight.start(false, 20, 6);
+    //this.boostRight.emitX = 64;
+    //this.boostRight.emitY = 500;
+
+
 
 
     this.ship.addChild(this.boostBottom);
@@ -151,9 +208,9 @@ AndRes.Level1.prototype = {
     if (this.ship.endGame){
       this.ship.body.velocity.x = 0;
       this.ship.body.velocity.y = 0;
-      this.boostBottom.visible = false;
-      this.boostLeft.visible = false;
-      this.boostRight.visible = false;
+      this.boostBottom.on = false;
+      this.boostLeft.on = false;
+      this.boostRight.on = false;
       this.ship.body.allowGravity = false;
 
     } else {
@@ -167,31 +224,31 @@ AndRes.Level1.prototype = {
       this.updateVelocityText();
 
       if(this.cursors.up.isDown && this.ship.fuel > 0){
-        this.boostBottom.visible = true;
+        this.boostBottom.on = true;
         this.ship.body.acceleration.y = -200;
         this.ship.fuel -= this.BOOSTER_FUEL;
         this.rocketsOn = true;
       } else {
-        this.boostBottom.visible = false;
+        this.boostBottom.on = false;
       }
 
       if(this.cursors.right.isDown && this.ship.fuel > 0){
-        this.boostLeft.visible = true;
+        this.boostLeft.on = true;
         this.ship.body.acceleration.x += 20;
         this.ship.fuel -= this.MANEUVER_FUEL;
         this.rocketsOn = true;
       } else {
-        this.boostLeft.visible = false;
+        this.boostLeft.on = false;
       }
 
       if(this.cursors.left.isDown && this.ship.fuel > 0){
-        this.boostRight.visible = true;
+        this.boostRight.on = true;
         this.ship.body.acceleration.x += -20;
         this.ship.fuel -= this.MANEUVER_FUEL;
         this.rocketsOn = true;
 
       } else {
-        this.boostRight.visible = false;
+        this.boostRight.on = false;
       }
 
       this.game.physics.arcade.overlap(this.ship, this.personGroup, this.collectPerson, null, this);
@@ -321,19 +378,38 @@ AndRes.Level1.prototype = {
   },
 
   collectFuel: function(player, fuel){
+    if (fuel.collecting){
+
+      return;
+    }
+
+    fuel.collecting = true;
+
     if (player.fuel < 1){
-      fuel.kill();
       player.fuel += 0.25;
       this.fuelSound.play('', null, 0.4);
       if (player.fuel > 1) { player.fuel = 1.0; }
     }
+
+    var tween = this.game.add.tween(fuel).to({x: player.x, y: player.y}, 300);
+    tween.onComplete.add(function(){    fuel.kill();
+    });
+    tween.start();
   },
 
   collectPerson: function(player, human){
-    human.kill();
+    if (human.saving) {
+      return;
+    }
+
+    human.saving = true;
     this.humansSaved += 1;
     this.updateHumansSaved();
     this.saveHumanSound.play();
+    var tween = this.game.add.tween(human).to({x: player.x, y: player.y}, 300);
+    tween.onComplete.add(function(){    human.kill();
+    });
+    tween.start();
   },
 
   massagedFuelText: function() {

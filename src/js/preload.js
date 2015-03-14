@@ -11,6 +11,7 @@ AndRes.Preload.prototype = {
     this.game.load.image('boost-left', './assets/images/boost-left.png');
     this.game.load.image('boost-right', './assets/images/boost-right.png');
     this.game.load.image('menu-background', './assets/images/menu.png');
+    this.game.load.image('spark', './assets/images/spark.png');
 
     this.game.load.audio('rocket', './assets/audio/rocket-sound.mp3');
     this.game.load.audio('death', './assets/audio/death.mp3');
