@@ -7,6 +7,8 @@ AndRes.Menu.prototype = {
 
   create: function(){
     this.game.add.sprite(0,0, 'menu-background');
+    this.rocketSound = this.game.add.audio('rocket');
+    this.fuelSound = this.game.add.audio('fuel');
 
     this.startButton = this.game.add.button(this.game.world.centerX - 55, this.game.world.centerY + 50, 'start-button', this.start, this, 1, 0, 2);
 
@@ -27,9 +29,6 @@ AndRes.Menu.prototype = {
 
     }, this);
 
-
-
-
     this.ship = new AndRes.Ship(this.game, -100, 125, 'level0', 11);
     this.ship.scale.x = 4;
     this.ship.scale.y = 4;
@@ -40,7 +39,17 @@ AndRes.Menu.prototype = {
 
     var tween = this.game.add.tween(this.textGroup).to({alpha: 1}, 1000);
     tween.onComplete.add(function(){
-      this.game.add.tween(this.ship).to({x: 650, y: 110}, 500).start()
+      this.rocketSound.play()
+
+      var shipTween = this.game.add.tween(this.ship).to({x: 650, y: 110}, 500);
+
+      shipTween.onComplete.add(function(){
+        this.rocketSound.stop();
+        this.fuelSound.play();
+
+      }, this);
+
+      shipTween.start();
 
 
     }, this);
