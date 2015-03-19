@@ -4,6 +4,9 @@ AndRes.Preload.prototype = {
   preload: function(){
     this.game.load.bitmapFont('spacefont', './assets/fonts/font.png', './assets/fonts/font.fnt');
     this.game.load.spritesheet('start-button', './assets/images/start-button.png', 100, 30);
+    this.game.load.spritesheet('how-to-button', './assets/images/how-to-button.png', 100, 30);
+    this.game.load.spritesheet('credits-button', './assets/images/credits-button.png', 100, 30);
+    this.game.load.spritesheet('main-menu-button', './assets/images/main-menu-button.png', 100, 30);
     this.game.load.tilemap('level0', './assets/level0.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.spritesheet('level0', './assets/level0.png', 32, 32);
    // this.game.load.image('ship', './assets/images/ship.png');
