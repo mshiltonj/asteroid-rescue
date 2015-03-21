@@ -46,7 +46,7 @@ AndRes.Level1.prototype = {
     });
 
  //
-    this.ship = new AndRes.Ship(this.game,250,415, 'level0', 11 );
+    this.ship = new AndRes.Ship(this.game,275,161, 'level0', 11 );
     this.game.add.existing(this.ship);
 
     this.youLoseText = this.game.add.bitmapText(0, 0, 'spacefont', "You Lose!", 72);
