@@ -8,5 +8,6 @@ AndRes.game.state.add('menu', AndRes.Menu);
 AndRes.game.state.add('level1', AndRes.Level1);
 AndRes.game.state.add('howTo', AndRes.HowTo);
 AndRes.game.state.add('credits', AndRes.Credits);
+AndRes.game.state.add('victory', AndRes.Victory);
 
 AndRes.game.state.start('boot');
