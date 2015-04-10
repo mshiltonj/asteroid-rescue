@@ -33,6 +33,6 @@
   <object gid="7" x="284" y="186"/>
  </objectgroup>
  <objectgroup name="invisibleLayer" width="12" height="6">
-  <object name="victory" x="259" y="153" width="59" height="8"/>
+  <object name="victory" x="259" y="153" width="59" height="9"/>
  </objectgroup>
 </map>
