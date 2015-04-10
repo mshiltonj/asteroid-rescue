@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="12" height="6" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="level0" tilewidth="32" tileheight="32">
+  <image source="../../src/assets/level0.png" width="384" height="384"/>
+ </tileset>
+ <layer name="backgroundLayer" width="12" height="6">
+  <data encoding="csv">
+4,4,4,4,4,4,4,16,16,16,16,16,
+4,4,4,4,4,4,4,16,16,16,16,16,
+4,4,4,4,4,4,4,16,16,16,16,16,
+4,4,4,4,4,4,4,16,4,4,16,16,
+16,16,16,16,16,16,16,16,16,16,16,16,
+16,16,16,16,16,16,16,16,16,16,16,16
+</data>
+ </layer>
+ <layer name="collisionLayer" width="12" height="6">
+  <data encoding="csv">
+5,26,26,26,26,26,26,26,26,26,26,6,
+15,0,0,0,0,0,0,0,0,0,0,13,
+15,0,0,0,0,0,0,0,0,0,0,13,
+15,0,0,0,0,0,0,0,0,0,0,13,
+15,0,0,0,0,0,0,0,0,0,0,13,
+17,2,2,2,2,2,2,2,2,2,2,18
+</data>
+ </layer>
+ <objectgroup name="playerLayer" width="12" height="6">
+  <object name="ship" gid="12" x="47" y="159"/>
+ </objectgroup>
+ <objectgroup name="objectLayer" width="12" height="6">
+  <object name="fuel" gid="10" x="231" y="53"/>
+  <object name="person" gid="9" x="104" y="158"/>
+  <object gid="7" x="259" y="186"/>
+  <object gid="7" x="284" y="186"/>
+ </objectgroup>
+ <objectgroup name="invisibleLayer" width="12" height="6">
+  <object name="victory" x="259" y="153" width="59" height="8"/>
+ </objectgroup>
+</map>

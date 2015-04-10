@@ -71,8 +71,10 @@
 14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,17,2,2,2,2,18,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14
 </data>
  </layer>
+ <objectgroup name="playerLayer" width="60" height="30">
+  <object name="ship" gid="12" x="271" y="191"/>
+ </objectgroup>
  <objectgroup name="objectLayer" width="60" height="30">
-  <object name="ship" gid="12" x="272" y="187"/>
   <object name="fuel" gid="10" x="845" y="280"/>
   <object name="person" gid="9" x="146" y="507"/>
   <object name="person" gid="9" x="34" y="247"/>

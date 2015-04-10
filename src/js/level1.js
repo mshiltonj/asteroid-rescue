@@ -15,7 +15,6 @@ AndRes.Level1.prototype = {
     this.saveHumanSound = this.game.add.audio('saveHuman');
     this.fuelSound = this.game.add.audio('fuel');
     this.spaceLoop = this.game.add.audio('spaceLoop');
-    this.victorySound = this.game.add.audio('victory');
 
     this.map = this.game.add.tilemap('level0');
     this.map.addTilesetImage('level0');
@@ -34,6 +33,7 @@ AndRes.Level1.prototype = {
       this[groupName].enableBody = true;
     }, this);
 
+    this.loadShip('playerLayer', AndRes.Ship);
 
     this.loadObjects();
 
@@ -41,35 +41,23 @@ AndRes.Level1.prototype = {
       person.body.setSize(15, 19, 9, 13 );
     });
 
-    this.victoryGroup.forEach(function(object){
-      object.body.setSize(48, 9);
-    });
-
- //
-    this.ship = new AndRes.Ship(this.game,275,161, 'level0', 11 );
-    this.game.add.existing(this.ship);
 
     this.youLoseText = this.game.add.bitmapText(0, 0, 'spacefont', "You Lose!", 72);
-
     this.youLoseText.tint = 0xFF0000;
     this.youLoseText.visible = false;
     this.youLoseText.scale.set(4, 4);
+    this.youLoseText.fixedToCamera = true;
     this.youLoseText.cameraOffset.x = this.game.width / 2 - this.youLoseText.width / 2;
     this.youLoseText.cameraOffset.y = this.game.height / 2 - this.youLoseText.height / 2;
     this.youLoseText.alpha = 0;
-    this.youLoseText.fixedToCamera = true;
 
 
-    this.youWinText = this.game.add.bitmapText(0, 0, 'spacefont', "YOU WIN!!", 96);
-    //this.youWinText.tint = 0xFFFF00;
-    this.youWinText.visible = false;
-    this.youWinText.scale.set(4, 4);
-    this.youWinText.cameraOffset.x = this.game.width / 2 - this.youWinText.width / 2;
-    this.youWinText.cameraOffset.y = this.game.height / 2 - this.youWinText.height / 2;
-    this.youWinText.alpha = 0;
-    this.youWinText.fixedToCamera = true;
+    this.allHumansNotSavedWarning = this.game.add.bitmapText(0,0, 'spacefont', "All Humans Not Saved!", 48);
+    this.allHumansNotSavedWarning.visible = false;
+    this.allHumansNotSavedWarning.fixedToCamera = true;
 
-
+    this.allHumansNotSavedWarning.cameraOffset.x = this.game.width / 2 - this.allHumansNotSavedWarning.width / 2;
+    this.allHumansNotSavedWarning.cameraOffset.y = this.game.height / 2 - this.allHumansNotSavedWarning.height / 2;
 
 
     this.game.physics.arcade.enable(this.ship);
@@ -146,7 +134,7 @@ AndRes.Level1.prototype = {
       this.ship.boostLeft.on = false;
       this.ship.boostRight.on = false;
       this.ship.body.allowGravity = false;
-
+      this.rocketSound.stop();
     } else {
       this.duration = this.game.time.now - this.startTime - this.game.time.pauseDuration + this.previousPauses;;
       this.durationText.setText("Time: " + this.displayDuration());
@@ -180,49 +168,56 @@ AndRes.Level1.prototype = {
         this.ship.body.acceleration.x += -20;
         this.ship.fuel -= this.MANEUVER_FUEL;
         this.rocketsOn = true;
-
       } else {
         this.ship.boostRight.on = false;
       }
 
+
+      if (this.rocketsOn){
+        if (! this.rocketSound.isPlaying ){
+          this.rocketSound.play('', null, 0.4, true, true);//'',null, null, true, true);
+        }
+      } else {
+        if (this.rocketSound.isPlaying) {
+          this.rocketSound.stop();
+        }
+      }
       this.game.physics.arcade.overlap(this.ship, this.personGroup, this.collectPerson, null, this);
       this.game.physics.arcade.overlap(this.ship, this.fuelGroup, this.collectFuel, null, this);
-      this.game.physics.arcade.overlap(this.ship, this.victoryGroup, this.youWon, this.safelyLanded, this);
+      this.displayAllHumansNotSavedWarning = false;
+
+      this.game.physics.arcade.overlap(this.ship, this.victoryGroup, this.youWon, this.safelyLandedAndSavedAllHumans, this);
+
+      if (this.displayAllHumansNotSavedWarning){
+        this.allHumansNotSavedWarning.visible = true;
+      } else {
+        this.allHumansNotSavedWarning.visible = false;
+      }
 
       this.fuelText.setText("Fuel: " + this.massagedFuelText());
     }
 
-
-    if (this.rocketsOn){
-      if (! this.rocketSound.isPlaying ){
-        this.rocketSound.play('', null, 0.4, true, true);//'',null, null, true, true);
-      }
-    } else {
-      this.rocketSound.stop();
-    }
   },
 
   youWon: function(player){
     player.endGame = true;
     this.stopShip();
-    this.victorySound.play('', null, 0.6);
-
-    this.youWinText.visible = true;
-    var newTextX = this.game.width / 2 - this.youWinText.width  / 8;
-    var newTextY = this.game.height / 2 - this.youWinText.height / 8;
-
-    this.game.add.tween(this.youWinText).to({alpha: 1}, 1000).start();
-    this.game.add.tween(this.youWinText.scale).to({x: 1, y: 1}, 1000).start();
-    this.game.add.tween(this.youWinText.cameraOffset).to({x: newTextX, y: newTextY}, 1000).start();
-
-    console.log("YOU WON!!");
+    this.game.state.start('victory');
   },
 
-  safelyLanded: function(ship, landingPad){
 
-    if (this.isTooFast(ship)) { return false; }
 
+  safelyLandedAndSavedAllHumans: function(ship, landingPad){
+    //landingPad.body.setSize(landingPad.width, landingPad.height);
+
+    var slowEnough, allHumansSaved, safelyLanded;
     var leftEdge, rightEdge;
+
+    if (! this.isTooFast(ship)) { slowEnough = true; }
+
+    if (this.humansSaved == this.personGroup.length) {
+      allHumansSaved = true;
+    }
 
     var shipLeft = new Phaser.Point(ship.x, ship.y + ship.height);
     var shipRight = new Phaser.Point(ship.x + ship.width, ship.y + ship.height);
@@ -239,26 +234,40 @@ AndRes.Level1.prototype = {
       rightEdge = true;
     }
 
+    if (rightEdge && leftEdge){
+      safelyLanded = true;
+    }
 
+    if (safelyLanded && ! allHumansSaved){
+      this.displayAllHumansNotSavedWarning = true;
+    }
 
-    return !!(leftEdge && rightEdge);
+    var rv = !!(allHumansSaved && slowEnough && safelyLanded)
+
+    return rv;
   },
 
-  landingPadHit: function(){
+  loadShip: function(layer, klass){
 
+    var item = this.map.objects[layer][0];
+    var ship;
+    this.ship = new AndRes.Ship(this.game, item.x, item.y - this.map.tileHeight, 'level0', item.gid - 1);
+    this.game.add.existing(this.ship);
   },
 
   loadObjectsByLayer: function(layer){
     this.map.objects[layer].forEach(function(item){
-      if (item.name == 'ship') { return;}
 
       var groupName = item.name + "Group";
+      var object;
 
       if (this[groupName]) {
         if (item.gid){
           this[groupName].create(item.x, item.y - this.map.tileHeight, 'level0', item.gid - 1);
         } else {
-          this[groupName].create(item.x, item.y);
+          object = this[groupName].create(item.x, item.y);
+          object.width = item.width;
+          object.height = item.height;
         }
       }
       else {
